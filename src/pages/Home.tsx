@@ -4,11 +4,11 @@ import { Fragment } from 'react';
 import JobApplicationTable from '../components/JobApplicationTable';
 
 const HomePage = () => {
-    const { data: jobApplication, isLoading, isError } = useJobApplication();
+    const { data: jobApplications, count, isLoading, isError } = useJobApplication();
 
     return <Fragment>
         {isLoading && <Loading />}
-        {!isLoading && <JobApplicationTable jobApplications={jobApplication ?? []} />}
+        {!isLoading && <JobApplicationTable jobApplications={jobApplications ?? []} total={count ?? 0} />}
     </Fragment>
 }
 

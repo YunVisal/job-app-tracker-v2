@@ -1,5 +1,6 @@
 import { type FC, type ReactNode } from "react"
 import ReactQueryClientProvider from "./providers/ReactQueryClientProvider"
+import AppThemeProvider from "./providers/AppThemeProvider"
 
 interface AppProviderProp {
     children: ReactNode
@@ -7,7 +8,9 @@ interface AppProviderProp {
 
 const AppProvider: FC<AppProviderProp> = ({ children }) => {
     return <ReactQueryClientProvider>
-        {children}
+        <AppThemeProvider>
+            {children}
+        </AppThemeProvider>
     </ReactQueryClientProvider>
 }
 

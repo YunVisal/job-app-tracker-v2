@@ -4,7 +4,7 @@ const getAllJobApplication = () => {
     return supabase
         .schema('jat')
         .from('job_applications')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('applied_at', { ascending: false })
 }
 

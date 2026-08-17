@@ -1,8 +1,9 @@
 import { createSortedRowModel, rowSortingFeature, rowPaginationFeature, tableFeatures, useTable, createPaginatedRowModel } from "@tanstack/react-table";
 import type { ColumnDef } from '@tanstack/react-table'
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from "@mui/material";
+import { Button, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Typography } from "@mui/material";
 import type { FC } from "react";
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { APPLICATION_STATUS_CONFIG } from "../constants/ApplicationStatus";
 
 type JobApplicationColumn = {
     job_title: string;
@@ -34,7 +35,11 @@ const columns: Array<ColumnDef<typeof features, JobApplicationColumn>> = [
     {
         accessorKey: 'status', // accessorKey shorthand
         header: 'Status',
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+            const value = (info.getValue() as string)
+            const { label, color } = APPLICATION_STATUS_CONFIG[value];
+            return <Chip label={label} color={color} size="small" />
+        },
         enableSorting: false,
     },
     {
@@ -62,10 +67,11 @@ function getAriaSort(sortDirection: false | 'asc' | 'desc') {
 }
 
 interface JobApplicationTableProp {
-    jobApplications: any[]
+    jobApplications: any[],
+    total: number
 }
 
-const JobApplicationTable: FC<JobApplicationTableProp> = ({ jobApplications }) => {
+const JobApplicationTable: FC<JobApplicationTableProp> = ({ jobApplications, total }) => {
     const data = jobApplications.map(ja => ({
         job_title: ja.job_title,
         company_name: ja.company_name,
@@ -118,6 +124,7 @@ const JobApplicationTable: FC<JobApplicationTableProp> = ({ jobApplications }) =
                                         </Typography>}
                                 </TableCell>
                             })}
+                            <TableCell></TableCell>
                         </TableRow>
                     ))}
                 </TableHead>
@@ -135,11 +142,31 @@ const JobApplicationTable: FC<JobApplicationTableProp> = ({ jobApplications }) =
                                         <table.FlexRender cell={cell} />
                                     </TableCell>
                                 ))}
+                                <TableCell><Button>View Detail</Button></TableCell>
                             </TableRow>
                         ))}
                 </TableBody>
             </Table>
         </TableContainer>
+        <TablePagination
+            component={'div'}
+            count={total}
+            page={table.state.pagination.pageIndex}
+            rowsPerPage={table.state.pagination.pageSize}
+            rowsPerPageOptions={[
+                10,
+                20,
+                30,
+                40,
+                50,
+            ]}
+            onPageChange={(_, page) => table.setPageIndex(page)}
+            onRowsPerPageChange={(event) => {
+                const pageSize = Number(event.target.value)
+                table.setPageSize(pageSize === -1 ? Infinity : pageSize)
+                table.setPageIndex(0)
+            }}
+        />
     </Paper >
 }
 
